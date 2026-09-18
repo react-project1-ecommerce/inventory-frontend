@@ -1,6 +1,8 @@
 import { useState } from 'react';
 
 import axios from 'axios';
+import { useNavigate,Link } from 'react-router-dom';
+
 
 const Login = () => {
 
@@ -8,13 +10,15 @@ const Login = () => {
 
   const [password, setPassword]= useState('');
 
+  const navigate = useNavigate();
+
   const handleLogin = async(e)=>{
 
       e.preventDefault();  // prevents page refresh
 
       try{
 
-      alert('here');
+      //alert('here');
       alert(email);
       alert(password);
 
@@ -22,10 +26,14 @@ const Login = () => {
 
       const res = await axios.post('http://localhost:3000/api/users/signIn',
                            {email,password},
-                           {withCredentials: true,}   //tells Axios to allow cookies to be sent/received with this request.
+                           {withCredentials: true,}   //tells Axios to allow cookies to be sent/received with this request.It is exactly what we want when the backend sends the JWT in an HTTP-only cookie.
                            );
 
-      alert(JSON.stringify(res.data));
+      console.log("LOGIN RESPONSE:", res.data);
+
+      alert("LOGIN SUCCESS");
+
+      navigate('/dashboard');  //react navigation alone does not protect dashboard
 
       }
       catch(err){
@@ -91,9 +99,19 @@ const Login = () => {
           </button>
 
         </form>
-
+       
+       <p className="text-center mt-4 text-gray-600">
+  Don't have an account?{" "}
+  <Link
+    to="/signup"
+    className="text-blue-600 font-semibold hover:underline"
+  >
+    Sign Up
+  </Link>
+</p>
       </div>
 
+       
     </div>
   );
 };

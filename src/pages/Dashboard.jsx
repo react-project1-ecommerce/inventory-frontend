@@ -1,7 +1,53 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import Header from "../header/Header";
 import Sidebar from "../header/Sidebar";
 
 const Dashboard = () => {
+
+const navigate = useNavigate();
+
+const [user, setUser] = useState(null);
+
+useEffect(() => {
+
+  const fetchCurrentUser  = async () => {
+
+    try {
+
+      //Browser send JWT cookie
+      //authMiddleware verifies JWT
+
+      const res= await axios.get("http://localhost:3000/api/users/currentUser",
+        {
+          withCredentials: true   //tells Axios to include the cookies when making this request.Without it, the browser may not send our JWT cookie to backend
+        }
+      );
+
+      //if JWT is valid then remain in Dashboard
+
+      setUser(res.data);
+
+      console.log("CURRENT USER:", res.data);
+
+    } 
+    catch (err) {
+
+      //if JWT is invalid redirect to login
+
+      console.log("User is not authenticated");
+
+      navigate("/login");
+
+    }
+
+  };
+
+  fetchCurrentUser();
+
+}, [navigate]);
+
 
   return (
 
@@ -17,7 +63,7 @@ const Dashboard = () => {
       <div className="flex-1">
 
         {/* Header */}
-        <Header />
+        <Header user={user} />
 
         {/* Dashboard body */}
         <main className="p-6">
