@@ -22,7 +22,9 @@ const Header = ({user}) => {
                            {withCredentials: true,}   //tells Axios to allow cookies to be sent/received with this request.It is exactly what we want when the backend sends the JWT in an HTTP-only cookie.
                            );
 
-      alert(JSON.stringify(res.data));
+      //alert(JSON.stringify(res.data));
+
+      
 
       //navigate('/login');
       window.location.href="/login";

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 const Sidebar = () => {
   return (
     <div className="w-64 min-h-screen bg-slate-800 text-white p-5">
@@ -13,7 +14,11 @@ const Sidebar = () => {
         </div>
 
         <div className="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer">
-          Products
+          <Link to="/categories">Categories</Link>
+        </div>
+
+        <div className="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer">
+          <Link to="/products">Products</Link>
         </div>
 
         <div className="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer">
