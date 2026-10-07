@@ -34,7 +34,7 @@ const EditProduct = () => {
     try {
 
       const response = await axios.get(
-        `http://localhost:3000/api/products/${id}`  //axios calls backend route  GET /api/products/:id
+        `${import.meta.env.VITE_API_URL}/api/products/${id}`  //axios calls backend route  GET /api/products/:id
       );
 
       const product = response.data;
@@ -67,7 +67,7 @@ const EditProduct = () => {
 
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/categories/"
+        `${import.meta.env.VITE_API_URL}/api/categories/`
       );
 
       setCategories(response.data);
@@ -109,7 +109,7 @@ const handleSubmit = async (e) => {
   try {
 
     await axios.put(
-      `http://localhost:3000/api/products/${id}`,   //router.put("/:id", updateProduct);
+      `${import.meta.env.VITE_API_URL}/api/products/${id}`,   //router.put("/:id", updateProduct);
       formData
     );
 

@@ -68,7 +68,7 @@ const currentProducts = filteredProducts.slice(
     try {
 
       const res = await axios.get(
-        "http://localhost:3000/api/products"
+        `${import.meta.env.VITE_API_URL}/api/products`
       );
 
       setProducts(res.data);
@@ -90,7 +90,7 @@ useEffect(() => {
     try {
 
       const res = await axios.get(
-        "http://localhost:3000/api/categories/"   
+        `${import.meta.env.VITE_API_URL}/api/categories/`   
       );
 
       setCategories(res.data);
@@ -131,7 +131,7 @@ useEffect(()=> {
 
 
     await axios.delete(
-      `http://localhost:3000/api/products/${id}`
+      `${import.meta.env.VITE_API_URL}/api/products/${id}`
     );
 
     setProducts(

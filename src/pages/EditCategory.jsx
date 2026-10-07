@@ -26,7 +26,7 @@ const EditCategory = () => {
     try {
 
       const response = await axios.get(
-        `http://localhost:3000/api/categories/${id}`
+        `${import.meta.env.VITE_API_URL}/api/categories/${id}`
       );
 
       setFormData(response.data);
@@ -62,7 +62,7 @@ const handleSubmit = async (e) => {
   try {
 
     await axios.put(
-      `http://localhost:3000/api/categories/${id}`,
+      `${import.meta.env.VITE_API_URL}/api/categories/${id}`,
       formData
     );
 

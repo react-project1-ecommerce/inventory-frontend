@@ -24,7 +24,7 @@ const Login = () => {
 
       //res is axios response object
 
-      const res = await axios.post('http://localhost:3000/api/users/signIn',
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/users/signIn`,
                            {email,password},
                            {withCredentials: true,}   //tells Axios to allow cookies to be sent/received with this request.It is exactly what we want when the backend sends the JWT in an HTTP-only cookie.
                            );
