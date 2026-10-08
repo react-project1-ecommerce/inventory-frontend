@@ -19,7 +19,7 @@ useEffect(() => {
       //Browser send JWT cookie
       //authMiddleware verifies JWT
 
-      const res= await axios.get("http://localhost:3000/api/users/currentUser",
+      const res= await axios.get(`${import.meta.env.VITE_API_URL}/api/users/currentUser`,
         {
           withCredentials: true   //tells Axios to include the cookies when making this request.Without it, the browser may not send our JWT cookie to backend
         }
