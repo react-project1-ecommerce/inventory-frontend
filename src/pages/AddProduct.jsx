@@ -31,7 +31,7 @@ const AddProduct = () => {
     try {
 
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/categories/`
+        "/api/categories/"
       );
 
       setCategories(response.data);
@@ -67,7 +67,7 @@ const AddProduct = () => {
     try {
 
       await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/products`,
+        "/api/products",
         formData
       );
 

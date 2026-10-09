@@ -39,7 +39,7 @@ const Categories = () => {
 
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/categories/`
+        "/api/categories/"
       );
 
       setCategories(response.data);
@@ -77,7 +77,7 @@ const handleSubmit = async (e) => {
     //backend saves it to mongoDB
 
     const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/categories/`,
+      "/api/categories/",
       formData
     );
 
@@ -119,7 +119,7 @@ const handleDelete = async (id) => {
   try {
 
     await axios.delete(
-      `${import.meta.env.VITE_API_URL}/api/categories/${id}`
+      "/api/categories/${id}"
     );
 
     await fetchCategories();
@@ -152,7 +152,7 @@ const handleDelete = async (id) => {
   try {
 
     await axios.delete(
-      `${import.meta.env.VITE_API_URL}/api/categories/${id}`
+      "/api/categories/${id}"
     );
 
     await fetchCategories();
