@@ -16,14 +16,13 @@ useEffect(() => {
 
     try {
 
-      //Browser send JWT cookie
-      //authMiddleware verifies JWT
+     //This sends the saved JWT in the browser, in the Authorization header, allowing the middleware to verify the user 
 
-      const res = await axios.get("/api/users/currentUser",
-        {
-          withCredentials: true   //tells Axios to include the cookies when making this request.Without it, the browser may not send our JWT cookie to backend
-        }
-      );
+axios.get("/api/users/currentUser", {
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem("token")}`
+  }
+})
 
       //if JWT is valid then remain in Dashboard
 

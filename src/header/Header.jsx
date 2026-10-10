@@ -7,35 +7,21 @@ const Header = ({user}) => {
 
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
+  
+const handleLogout = () => {
 
 
-    // if the backend stops or the request fails , then it will go to catch show Logour error
+  // Remove the saved JWT and username from the browser
 
-    try {
+  localStorage.removeItem("token");  
+  localStorage.removeItem("username");
 
-      localStorage.removeItem("username");
-    // post with empty body
+  // Return to the login page
 
-      const res = await axios.post('http://localhost:3000/api/users/signOut',
-                           {},
-                           {withCredentials: true,}   //tells Axios to allow cookies to be sent/received with this request.It is exactly what we want when the backend sends the JWT in an HTTP-only cookie.
-                           );
+  window.location.href = "/login";
 
-      //alert(JSON.stringify(res.data));
+};
 
-      
-
-      //navigate('/login');
-      window.location.href="/login";
-
-      } catch (err) {
-
-       console.log("Logout error:", err); 
-
-     }
-      
-  }
 
   return (
     <header className="h-16 bg-white shadow flex items-center justify-between px-6">

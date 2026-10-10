@@ -19,19 +19,24 @@ const Login = () => {
       try{
 
       //alert('here');
-      alert(email);
-      alert(password);
+      //alert(email);
+      //alert(password);
 
       //res is axios response object
 
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/users/signIn`,
                            {email,password},
-                           {withCredentials: true,}   //tells Axios to allow cookies to be sent/received with this request.It is exactly what we want when the backend sends the JWT in an HTTP-only cookie.
                            );
 
       console.log("LOGIN RESPONSE:", res.data);
 
+      localStorage.setItem("token", res.data.token); //It saves JWT returned by backend as res.data.token in the browser.
+
+      //so that the frontend can send it when requesting protected pages
+
       alert("LOGIN SUCCESS");
+
+
 
       navigate('/dashboard');  //react navigation alone does not protect dashboard
 
