@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
 
 const Header = ({user}) => {
 
@@ -8,18 +10,19 @@ const Header = ({user}) => {
   const navigate = useNavigate();
 
   
-const handleLogout = () => {
 
+const handleLogout = async () => {
 
-  // Remove the saved JWT and username from the browser
+  try {
 
-  localStorage.removeItem("token");  
-  localStorage.removeItem("username");
+    await signOut(auth);
+    
+    window.location.href = "/login";
 
-  // Return to the login page
+  } catch (err) {
 
-  window.location.href = "/login";
-
+    console.error("Logout failed:", err);
+  }
 };
 
 

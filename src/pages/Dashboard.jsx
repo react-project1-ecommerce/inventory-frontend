@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Header from "../header/Header";
 import Sidebar from "../header/Sidebar";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase";
 
 const Dashboard = () => {
 
@@ -10,42 +12,42 @@ const navigate = useNavigate();
 
 const [user, setUser] = useState(null);
 
+
 useEffect(() => {
 
-  const fetchCurrentUser  = async () => {
+  //The Dashboard waits for Firebase to confirm the login before requesting the user's inventory profile.
 
-    try {
-
-     //This sends the saved JWT in the browser, in the Authorization header, allowing the middleware to verify the user 
-
-axios.get("/api/users/currentUser", {
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem("token")}`
-  }
-})
-
-      //if JWT is valid then remain in Dashboard
-
-      setUser(res.data);
-
-      console.log("CURRENT USER:", res.data);
-
-    } 
-    catch (err) {
-
-      //if JWT is invalid redirect to login
-
-      console.log("User is not authenticated");
-
+  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    if (!currentUser) {
       navigate("/login");
-
+      return;
     }
 
-  };
+    const fetchCurrentUser = async () => {
+      try {
+        const token = await currentUser.getIdToken();
 
-  fetchCurrentUser();
+        const res = await axios.get("/api/users/currentUser", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setUser(res.data);
+        console.log("CURRENT USER:", res.data);
+      } catch (err) {
+        console.error("Unable to fetch current user:", err);
+        navigate("/login");
+      }
+    };
+
+    fetchCurrentUser();
+  });
+
+  return () => unsubscribe();
 
 }, [navigate]);
+
 
 
   return (

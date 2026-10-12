@@ -1,73 +1,44 @@
-import { useState } from 'react';
 
-import axios from 'axios';
-import { useNavigate,Link } from 'react-router-dom';
-
+import { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigate, Link } from "react-router-dom";
+import { auth } from "../firebase";
 
 const Login = () => {
-
-  const [email,setEmail] = useState('');
-
-  const [password, setPassword]= useState('');
+  
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
-  const handleLogin = async(e)=>{
+  const handleLogin = async (e) => {
 
-      e.preventDefault();  // prevents page refresh
+    e.preventDefault();
 
-      try{
+    setError("");
 
-      //alert('here');
-      //alert(email);
-      //alert(password);
+    try {
 
-      //res is axios response object
+      await signInWithEmailAndPassword(auth, email, password);
 
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/users/signIn`,
-                           {email,password},
-                           );
+      navigate("/dashboard");
 
-      console.log("LOGIN RESPONSE:", res.data);
-
-      localStorage.setItem("token", res.data.token); //It saves JWT returned by backend as res.data.token in the browser.
-
-      //so that the frontend can send it when requesting protected pages
-
-      alert("LOGIN SUCCESS");
-
-
-
-      navigate('/dashboard');  //react navigation alone does not protect dashboard
-
-      }
-      catch(err){
-
-         //console.log(err.response?.data);  
-
-       console.log("ERROR:", err); //if network error that means the react app is not recieving a HTTP response from localhost:3000
-
-       console.log("MESSAGE:", err.message);
-
-      }
-
-
-
-
-  }
+    } 
+    catch (err) {
+      console.error("Firebase login error:", err);
+      setError("Login failed. Please check your email and password.");
+    }
+  };
 
   return (
-
     <div className="min-h-screen flex items-center justify-center bg-slate-100">
-
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-
         <h1 className="text-2xl font-bold text-center mb-6">
           Login
         </h1>
 
         <form onSubmit={handleLogin}>
-
           <div className="mb-4">
             <label className="block mb-2 font-medium">
               Email
@@ -77,8 +48,9 @@ const Login = () => {
               type="email"
               placeholder="Enter your email"
               value={email}
-              onChange={(e)=> setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-4 py-2"
+              required
             />
           </div>
 
@@ -91,10 +63,17 @@ const Login = () => {
               type="password"
               placeholder="Enter your password"
               value={password}
-              onChange={(e)=>setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-4 py-2"
+              required
             />
           </div>
+
+          {error && (
+            <p className="text-red-600 text-sm mb-4">
+              {error}
+            </p>
+          )}
 
           <button
             type="submit"
@@ -102,21 +81,18 @@ const Login = () => {
           >
             Login
           </button>
-
         </form>
-       
-       <p className="text-center mt-4 text-gray-600">
-  Don't have an account?{" "}
-  <Link
-    to="/signup"
-    className="text-blue-600 font-semibold hover:underline"
-  >
-    Sign Up
-  </Link>
-</p>
-      </div>
 
-       
+        <p className="text-center mt-4 text-gray-600">
+          Don't have an account?{" "}
+          <Link
+            to="/signup"
+            className="text-blue-600 font-semibold hover:underline"
+          >
+            Sign Up
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };
