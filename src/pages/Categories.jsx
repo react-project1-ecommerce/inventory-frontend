@@ -42,6 +42,8 @@ const Categories = () => {
         "/api/categories/"
       );
 
+      console.log("CATEGORIES API RESPONSE:", response.data);
+      
       setCategories(response.data);
 
     } catch (err) {
