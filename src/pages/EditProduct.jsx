@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 
 import Header from "../header/Header";
 import Sidebar from "../header/Sidebar";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase";
 
 const EditProduct = () => {
 
