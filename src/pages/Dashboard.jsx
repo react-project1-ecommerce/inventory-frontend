@@ -36,7 +36,7 @@ useEffect(() => {
       try {
         const token = await currentUser.getIdToken();
 
-        const res = await axios.get("/api/users/currentUser", {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/currentUser`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
