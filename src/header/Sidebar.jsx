@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+
 const Sidebar = () => {
   return (
     <div className="w-64 min-h-screen bg-slate-800 text-white p-5">
@@ -10,7 +11,7 @@ const Sidebar = () => {
       <nav className="space-y-3">
 
         <div className="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer">
-          Dashboard
+          <Link to="/dashboard">Dashboard</Link>
         </div>
 
         <div className="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer">

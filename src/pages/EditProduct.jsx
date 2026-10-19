@@ -29,12 +29,25 @@ const EditProduct = () => {
 
   useEffect(() => {
 
-  const fetchProduct = async () => {
+     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    if (!currentUser) {
+      navigate("/login");
+      return;
+    }
+
+  const fetchProduct = async (currentUser) => {
+
+    const token = await currentUser.getIdToken();   //Firebase ID token
 
     try {
 
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/products/${id}`  //axios calls backend route  GET /api/products/:id
+        `${import.meta.env.VITE_API_URL}/api/products/${id}`,  //axios calls backend route  GET /api/products/:id
+        {
+          headers:{
+            Authorization:`Bearer ${token}`,
+          },
+        }
       );
 
       const product = response.data;
@@ -63,11 +76,18 @@ const EditProduct = () => {
   };
 
   
-  const fetchCategories = async () => {
+  const fetchCategories = async (currentUser) => {
+
+    const token = await currentUser.getIdToken();
 
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/categories/`
+        `${import.meta.env.VITE_API_URL}/api/categories/`,
+        {
+          headers:{
+            Authorization:`Bearer ${token}`,
+          },
+        }
       );
 
       setCategories(response.data);
@@ -83,9 +103,13 @@ const EditProduct = () => {
   };
 
   
-  fetchProduct();
+  fetchProduct(currentUser);
 
-  fetchCategories();
+  fetchCategories(currentUser);
+
+    });
+
+  return () => unsubscribe();
 
 }, [id]);
 
@@ -104,7 +128,7 @@ const EditProduct = () => {
 
 const handleSubmit = async (e) => {
 
-  e.preventDefault();
+  e.preventDefault();  //prevents page refresh
 
   try {
 
@@ -115,7 +139,7 @@ const handleSubmit = async (e) => {
 
     toast.success("Product updated successfully!");
 
-    navigate("/products");
+    navigate(-1);
 
   } catch (err) {
 
@@ -299,7 +323,7 @@ return (
 
               <button
                 type="button"
-                onClick={() => navigate("/products")}
+                onClick={() => navigate(-1)}
                 className="bg-gray-300 text-gray-800 px-5 py-2 rounded-lg hover:bg-gray-400"
               >
                 Cancel
