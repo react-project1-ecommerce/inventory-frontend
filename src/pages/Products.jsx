@@ -5,6 +5,9 @@ import Sidebar from "../header/Sidebar";
 import { useNavigate} from "react-router-dom";
 import { toast } from "react-toastify";
 
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase";
+
 const Products = () => {
 
   const [products, setProducts] = useState([]);
@@ -18,6 +21,8 @@ const Products = () => {
   const [stockFilter, setStockFilter] = useState("");  
 
   const [currentPage, setCurrentPage] = useState(1); 
+
+  const [currentUser, setCurrentUser] = useState(null);  
 
   const productsPerPage = 5;
 
@@ -63,12 +68,19 @@ const currentProducts = filteredProducts.slice(
 
 
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (user) => {
 
     try {
 
+      const token = await user.getIdToken();
+
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/products`
+        `${import.meta.env.VITE_API_URL}/api/products`,
+        {
+          headers:{
+            Authorization:`Bearer ${token}`,
+          },
+        }
       );
 
       setProducts(res.data);
@@ -81,16 +93,31 @@ const currentProducts = filteredProducts.slice(
 
   };
 
+
 useEffect(() => {
 
-  fetchProducts();
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
 
-  const fetchCategories = async () => {
+    if (!user) {
+      setCurrentUser(null);
+      navigate("/login");
+      return;
+    }
+
+
+  const fetchCategories = async (user) => {
 
     try {
 
+      const token = await user.getIdToken();
+
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/categories/`   
+        `${import.meta.env.VITE_API_URL}/api/categories/`,
+        {
+          headers:{
+            Authorization:`Bearer ${token}`,
+          },
+        }   
       );
 
       setCategories(res.data);
@@ -103,9 +130,18 @@ useEffect(() => {
 
   };
 
-  fetchCategories();
 
-}, []);
+    setCurrentUser(user); // store Firebase authenticated user in state variable so can be accessed by handleSubmit
+   
+    fetchProducts(user);
+
+    fetchCategories(user);
+
+
+  });
+
+  return () => unsubscribe();
+}, [navigate]);
 
 //So we'll automatically return to Page 1 whenever the search, category, or stock filter changes.
 
@@ -282,7 +318,7 @@ useEffect(()=> {
                     </td>
 
                     <td className="px-4 py-3">
-                      {product.category?.name}
+                      {product.category?.name} 
                     </td>
 
                     <td className="px-4 py-3">

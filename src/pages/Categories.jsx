@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 
 import Header from "../header/Header";
 import Sidebar from "../header/Sidebar";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase";
 
 const Categories = () => {
 
@@ -20,41 +22,63 @@ const Categories = () => {
 
   const [searchTerm, setSearchTerm] = useState("");  //search state for category search box
 
+  const [currentUser, setCurrentUser] = useState(null);
 
-  useEffect(()=>{
 
-   
-      fetchCategories();
+const fetchCategories = async (user) => {
 
-  },[]);
+  try {
+
+    //The token is proof to backend that the request comes from an authenticated Firebase user.
+
+    const token = await user.getIdToken(); 
+
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_URL}/api/categories/`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("CATEGORIES API RESPONSE:", res.data);
+    setCategories(res.data);
+  } catch (err) {
+
+
+    console.error("Category loading error:", err);
+    console.error("Error response:", err.response?.data);
+    console.error("Error status:", err.response?.status);
+
+    toast.error(
+      err.response?.data?.message || "Failed to load categories"
+    );
+  }
+};
+
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      setCurrentUser(null);
+      navigate("/login");
+      return;
+    }
+
+    setCurrentUser(user); // store Firebase authenticated user in state variable so can be accessed by handleSubmit
+    fetchCategories(user);
+  });
+
+  return () => unsubscribe();
+}, [navigate]);
+
+
 
   useEffect(() => {
 
       setCurrentPage(1);
 
 }, [categories,searchTerm]);  //whenever categories list changes either due to deletion or addition or search term changes page gores back to Page 1 
-
-
-   const fetchCategories = async () => {
-
-    try {
-      const response = await axios.get(
-        "/api/categories/"
-      );
-
-      console.log("CATEGORIES API RESPONSE:", response.data);
-      
-      setCategories(response.data);
-
-    } catch (err) {
-
-      toast.error(
-        err.response?.data?.message || "Failed to load categories"
-      );
-
-    }
-
-  };
 
 
 
@@ -73,21 +97,40 @@ const handleSubmit = async (e) => {
 
   e.preventDefault();  //prevents page refresh
 
+  if (!currentUser) {
+  toast.error("Please login first.");
+  return;
+}
+
   try {
 
     //send the category to backend POST /api/categories
     //backend saves it to mongoDB
 
+    const token = await currentUser.getIdToken(); //currentUser refers to user. One of its built-in methods is getIdToken().
+    
+
+
+    //The method asks Firebase to provide an ID token for the currently authenticated user.
+
+    //currentUser is a React state variable, but currentUser.getIdToken() calls a method belonging to the Firebase user object stored inside it.
+
+
     const response = await axios.post(
-      "/api/categories/",
-      formData
+      `${import.meta.env.VITE_API_URL}/api/categories/`,   
+      formData,
+      {
+        headers:{
+          Authorization:`Bearer ${token}`,
+        },
+      }
     );
 
     //add the newly created category to the page immediately
 
     //setCategories([...categories, response.data]);
 
-    await fetchCategories();
+    await fetchCategories(currentUser);
 
      //clear the form data
 
@@ -107,8 +150,14 @@ const handleSubmit = async (e) => {
     );
 
   }
+  }; // closes handleSubmit
 
 const handleDelete = async (id) => {
+
+if (!currentUser) {
+  toast.error("Please login first.");
+  return;
+}
 
   const confirmDelete = window.confirm(
     "Are you sure you want to delete this category?"
@@ -118,13 +167,22 @@ const handleDelete = async (id) => {
     return;
   }
 
+
   try {
 
+
+  const token = await currentUser.getIdToken();
+
     await axios.delete(
-      "/api/categories/${id}"
+      `${import.meta.env.VITE_API_URL}/api/categories/${id}`,
+      {
+        headers:{
+          Authorization:`Bearer ${token}`,
+        },
+      }
     );
 
-    await fetchCategories();
+    await fetchCategories(currentUser);
 
     toast.success("Category deleted successfully!");
 
@@ -137,40 +195,10 @@ const handleDelete = async (id) => {
 
   }
 
-};
-};
+}
 
 
-const handleDelete = async (id) => {
 
-  const confirmDelete = window.confirm(
-    "Are you sure you want to delete this category?"
-  );
-
-  if (!confirmDelete) {
-    return;
-  }
-
-  try {
-
-    await axios.delete(
-      "/api/categories/${id}"
-    );
-
-    await fetchCategories();
-
-    toast.success("Category deleted successfully!");
-
-  } catch (err) {
-
-    toast.error(
-      err.response?.data?.message ||
-      "Failed to delete category"
-    );
-
-  }
-
-};
 
 const filteredCategories = categories.filter((category) =>
   category.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -365,5 +393,6 @@ return (
   </div>
 );
 };
+
 
 export default Categories;
