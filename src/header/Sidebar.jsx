@@ -23,6 +23,13 @@ const Sidebar = () => {
         </div>
 
         <div className="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer">
+          <Link to="/stock-management">Stock Management</Link>
+        </div>
+        <div className="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer">
+  <Link to="/stock-history">Stock History</Link>
+</div>
+
+        <div className="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer">
           Suppliers
         </div>
 

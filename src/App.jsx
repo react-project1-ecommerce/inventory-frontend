@@ -15,6 +15,9 @@ import AddProduct from "./pages/AddProduct";
 import EditProduct from "./pages/EditProduct";
 import Categories from "./pages/Categories.jsx";
 import EditCategory from "./pages/EditCategory";
+import StockManagement from "./pages/StockManagement";
+import StockHistory from "./pages/StockHistory";
+import ForgotPassword from "./pages/ForgotPassword";
 
 import { ToastContainer } from "react-toastify";
 
@@ -36,7 +39,12 @@ function App() {
         <Route path="/edit-product/:id" element={<EditProduct/>}/>
         <Route path="/categories" element={<Categories/>}/>
         <Route path="/edit-category/:id"  element={<EditCategory/>}/>
-
+        <Route path="/stock-management" element={<StockManagement/>}/>
+        <Route path="/forgot-password" element={<ForgotPassword/>}/>
+        <Route
+  path="/stock-history"
+  element={<StockHistory />}
+/>
       </Routes>
 
     </BrowserRouter>

@@ -3,6 +3,12 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
+import { sendEmailVerification } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
+
+import { toast } from "react-toastify";
+
 const Signup = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -93,41 +99,80 @@ const Signup = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
 
-    setServerError("");
+const handleSignup = async (e) => {
+  e.preventDefault();
+  setServerError("");
 
-    if (!validateForm()) {
-      return;
-    }
+  if (!validateForm()) {
+    return;
+  }
 
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/users/registerUser`,
-        {
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          password: formData.password,
-          department: formData.department,
-        }
-      );
+  let firebaseUser = null;
 
-      alert(res.data.message || "Registration successful!");
+  try {
+    // Step 1: Create the Firebase account
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      formData.email.trim(),
+      formData.password
+    );
 
-      navigate("/login");
+    firebaseUser = userCredential.user;
 
-    } catch (err) {
+    // Step 2: Send the verification email
+    await sendEmailVerification(firebaseUser);
 
-      console.log(err);
+    // Step 3: Get the Firebase ID token
+    const token = await firebaseUser.getIdToken();
 
+    // Step 4: Save the user's profile in MongoDB
+    await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/users/registerUser`,
+      {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        password: formData.password,
+        department: formData.department,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    // Step 5: Sign out until the email is verified
+    await auth.signOut();
+
+    // alert(
+    //   "Registration successful! Please check your email and click the verification link before logging in."
+    // );
+
+    toast.success("Registration successful! Please check your email and click the verification link before logging in.");
+   
+    navigate("/login");
+  } catch (err) {
+    console.error("Signup error:", err);
+
+    // If Firebase account creation succeeded but a later step failed,
+    // explain the issue instead of pretending signup was successful.
+    if (firebaseUser) {
       setServerError(
-        err.response?.data?.error ||
-          "Registration failed. Please try again."
+        "Your Firebase account was created, but registration did not finish. Please contact support before trying again."
       );
-
+    } else {
+      setServerError(
+        err.code === "auth/email-already-in-use"
+          ? "This email is already registered. Please log in instead."
+          : err.response?.data?.error ||
+            err.message ||
+            "Registration failed. Please try again."
+      );
     }
-  };
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-8">

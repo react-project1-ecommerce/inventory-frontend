@@ -197,12 +197,14 @@ if (!currentUser) {
 
 }
 
-
+console.log("All categories:", categories);
 
 
 const filteredCategories = categories.filter((category) =>
-  category.name.toLowerCase().includes(searchTerm.toLowerCase())
+  category.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
 );
+
+console.log("Filtered categories:", filteredCategories);
 
 
 const totalPages = Math.ceil(

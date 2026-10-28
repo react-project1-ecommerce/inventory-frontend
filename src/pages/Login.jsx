@@ -3,12 +3,19 @@ import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
 import { auth } from "../firebase";
+import { sendPasswordResetEmail } from "firebase/auth";
+
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import "../css/Login.css";
+import { toast } from "react-toastify";
 
 const Login = () => {
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -20,8 +27,20 @@ const Login = () => {
 
     try {
 
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
 
+      //This prevents an unverified user from staying signed in after login.
+
+      if (!userCredential.user.emailVerified) {
+          await auth.signOut();
+
+          toast.error("Please verify your email before logging in.");
+          return;
+      }
+
+      //true forces Firebase to refresh the ID token after the email verification check.
+      
+      await userCredential.user.getIdToken(true);
       navigate("/dashboard");
 
     } 
@@ -58,15 +77,35 @@ const Login = () => {
             <label className="block mb-2 font-medium">
               Password
             </label>
-
+            
+            <div className="password-wrapper">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-4 py-2"
               required
             />
+
+             <button
+             type="button"
+             onClick={() => setShowPassword((prev) => !prev)}
+             className="eye-btn"
+             aria-label={showPassword ? "Hide password" : "Show password"}
+             >
+            {showPassword ? <FiEyeOff /> : <FiEye />}
+            </button>
+           </div>
+            
+            <div className="mt-2 text-right">
+  <Link
+    to="/forgot-password"
+    className="text-sm text-blue-600 hover:underline"
+  >
+    Forgot Password?
+  </Link>
+</div>
           </div>
 
           {error && (

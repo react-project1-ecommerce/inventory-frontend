@@ -1,0 +1,34 @@
+.password-wrapper {
+  position: relative;
+  width: 382px;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding: 10px 35px 10px 10px;
+  box-sizing: border-box;
+}
+
+.eye-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.changepassword-wrapper {
+  position: relative;
+  width: 535px;
+
+  left: 20%;
+}
+
+.changepassword-wrapper input {
+  width: 100%;
+  padding: 10px 35px 10px 10px;
+  box-sizing: border-box;
+}

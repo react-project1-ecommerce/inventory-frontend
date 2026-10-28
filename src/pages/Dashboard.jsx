@@ -5,6 +5,7 @@ import Header from "../header/Header";
 import Sidebar from "../header/Sidebar";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
+import Loader from "../components/Loader";
 
 const Dashboard = () => {
 
@@ -21,6 +22,8 @@ const [totalCategories,setTotalCategories] = useState(0);
 const [stockValue, setStockValue] = useState(0);  
 
 const [recentProducts, setRecentProducts] = useState([]);
+
+const [loading, setLoading] = useState(true); 
 
 useEffect(() => {
 
@@ -90,7 +93,9 @@ console.log("PRODUCT COUNT:", res.data.length);
   } 
   catch (err) {
     console.error("Unable to fetch products:", err);
-  }
+
+  } 
+
 
 };
 
@@ -122,12 +127,16 @@ console.log("PRODUCT COUNT:", res.data.length);
     }
  }
 
+ // Promise.all waits for all three functions to finish, and finally then hides the loader
 
-    fetchCurrentUser();
+ Promise.all([
+  fetchCurrentUser(),
+  fetchProducts(currentUser),
+  fetchCategories(currentUser),
 
-    fetchProducts(currentUser);
-
-    fetchCategories(currentUser);
+]).finally(() => {
+  setLoading(false);
+});
     
   });
 
@@ -156,6 +165,10 @@ console.log("PRODUCT COUNT:", res.data.length);
        
 {/* Dashboard body */}
 <main className="p-6">
+  {loading ? (
+    <Loader message="Loading dashboard..." />
+  ) : (
+    <>
 
   <h2 className="text-2xl font-bold text-slate-700 mb-6">
     Dashboard
@@ -217,7 +230,13 @@ console.log("PRODUCT COUNT:", res.data.length);
       </thead>
 
       <tbody>
-        {recentProducts.map((product) => (
+      { recentProducts.length === 0 ? (
+          <tr>
+            <td colSpan="4" className="py-4 text-center text-gray-500">
+              No products found.
+            </td>
+          </tr>
+        ) : ( recentProducts.map((product) => (
           <tr key={product._id} className="border-b">
 
             <td className="py-3"><Link onClick={()=>navigate(`/edit-product/${product._id}`)}>{product.name}</Link></td>
@@ -231,15 +250,8 @@ console.log("PRODUCT COUNT:", res.data.length);
             </td>
 
           </tr>
-        ))}
+        )))}
 
-        {recentProducts.length === 0 && (
-          <tr>
-            <td colSpan="4" className="py-4 text-center text-gray-500">
-              No products found.
-            </td>
-          </tr>
-        )}
       </tbody>
 
     </table>
@@ -249,6 +261,8 @@ console.log("PRODUCT COUNT:", res.data.length);
 
 
 
+    </>
+  )}
 </main>
 
       </div>

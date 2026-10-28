@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 
 import Header from "../header/Header";
 import Sidebar from "../header/Sidebar";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase";
 
 const EditCategory = () => {
 
@@ -19,14 +21,31 @@ const EditCategory = () => {
 
   const [error, setError] = useState("");
 
+  const [currentUser,setCurrentUser] = useState(null);
+
   useEffect(() => {
 
-  const fetchCategory = async () => {
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    setCurrentUser(user);
+
+  const fetchCategory = async (user) => {
 
     try {
 
+      const token = await user.getIdToken();
+
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/categories/${id}`
+        `${import.meta.env.VITE_API_URL}/api/categories/${id}`,
+        {
+          headers:{
+            Authorization:`Bearer ${token}`,
+          },
+        }
       );
 
       setFormData(response.data);
@@ -42,9 +61,13 @@ const EditCategory = () => {
 
   };
 
-  fetchCategory();
+  fetchCategory(user);
 
-}, [id]);
+});
+
+ return () => unsubscribe();
+
+}, [navigate]);
 
   const handleChange = (e) => {
 
@@ -61,9 +84,16 @@ const handleSubmit = async (e) => {
 
   try {
 
+    const token = await currentUser.getIdToken();
+
     await axios.put(
       `${import.meta.env.VITE_API_URL}/api/categories/${id}`,
-      formData
+      formData,
+      {
+        headers:{
+          Authorization:`Bearer ${token}`,
+        },
+      }
     );
 
     toast.success("Category updated successfully!");

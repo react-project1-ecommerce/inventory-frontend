@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
+import Loader from "../components/Loader";
 
 const Products = () => {
 
@@ -22,24 +23,27 @@ const Products = () => {
 
   const [currentPage, setCurrentPage] = useState(1); 
 
-  const [currentUser, setCurrentUser] = useState(null);  
+  const [currentUser, setCurrentUser] = useState(null); 
+
+  const [loading, setLoading] = useState(true); 
 
   const productsPerPage = 5;
 
 
   const navigate = useNavigate();
 
+const normalizedSearch = searchTerm.trim().toLowerCase();
 
 const filteredProducts = products.filter((product) => {
 
   const matchesSearch =
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.supplier.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    String(product.quantity).includes(searchTerm) ||
-    String(product.price).includes(searchTerm);
+    product.name.toLowerCase().includes(normalizedSearch) ||
+    product.sku.toLowerCase().includes(normalizedSearch) ||
+    product.category.name.toLowerCase().includes(normalizedSearch) ||
+    product.supplier.toLowerCase().includes(normalizedSearch) ||
+    product.department.toLowerCase().includes(normalizedSearch) ||
+    String(product.quantity).includes(searchTerm.trim()) ||
+    String(product.price).includes(searchTerm.trim());
 
   const matchesCategory =
     categoryFilter === "" ||
@@ -89,6 +93,9 @@ const currentProducts = filteredProducts.slice(
 
       console.log("Error fetching products:", err);
 
+    } finally {
+
+      setLoading(false);
     }
 
   };
@@ -100,6 +107,7 @@ useEffect(() => {
 
     if (!user) {
       setCurrentUser(null);
+      setLoading(false);
       navigate("/login");
       return;
     }
@@ -133,9 +141,17 @@ useEffect(() => {
 
     setCurrentUser(user); // store Firebase authenticated user in state variable so can be accessed by handleSubmit
    
-    fetchProducts(user);
+    // fetchProducts(user);
 
-    fetchCategories(user);
+    // fetchCategories(user);
+
+    Promise.all([
+       fetchProducts(user),
+       fetchCategories(user),
+    ]).finally(()=>{
+
+        setLoading(false);
+    });
 
 
   });
@@ -286,74 +302,75 @@ useEffect(()=> {
 
               <tbody>
 
-              {filteredProducts.length === 0 ? (
 
-    <tr>
-      <td
-        colSpan="8"
-        className="text-center py-6 text-gray-500"
-      >
-        No products found.
+{loading ? (
+  <tr>
+    <td colSpan="8" className="py-6">
+      <Loader message="Loading products..." />
+    </td>
+  </tr>
+) : filteredProducts.length === 0 ? (
+  <tr>
+    <td
+      colSpan="8"
+      className="text-center py-6 text-gray-500"
+    >
+      No products found.
+    </td>
+  </tr>
+) : (
+  currentProducts.map((product) => (
+    <tr
+      key={product._id}
+      className="border-t hover:bg-slate-50"
+    >
+      <td className="px-4 py-3 font-medium">
+        {product.sku}
+      </td>
+
+      <td className="px-4 py-3">
+        {product.name}
+      </td>
+
+      <td className="px-4 py-3">
+        {product.category?.name}
+      </td>
+
+      <td className="px-4 py-3">
+        {product.quantity}
+      </td>
+
+      <td className="px-4 py-3">
+        ₹{product.price}
+      </td>
+
+      <td className="px-4 py-3">
+        {product.supplier}
+      </td>
+
+      <td className="px-4 py-3">
+        {product.department}
+      </td>
+
+      <td className="px-4 py-3">
+        <button
+          className="text-blue-600 hover:underline mr-3"
+          onClick={() => navigate(`/edit-product/${product._id}`)}
+        >
+          Edit
+        </button>
+
+        <button
+          className="text-red-600 hover:underline"
+          onClick={() => handleDelete(product._id)}
+        >
+          Delete
+        </button>
       </td>
     </tr>
+  ))
+)}
 
-  ) : (
-
-                //display currentProducts instead of all filtered Products-> filteredProducts
-
-                //filteredProducts.map((product) => (
-                  currentProducts.map((product) => (
-
-                  <tr
-                    key={product._id}
-                    className="border-t hover:bg-slate-50"
-                  >
-
-                    <td className="px-4 py-3 font-medium">
-                      {product.sku}
-                    </td>
-
-                    <td className="px-4 py-3">
-                      {product.name}
-                    </td>
-
-                    <td className="px-4 py-3">
-                      {product.category?.name} 
-                    </td>
-
-                    <td className="px-4 py-3">
-                      {product.quantity}
-                    </td>
-
-                    <td className="px-4 py-3">
-                      ₹{product.price}
-                    </td>
-
-                    <td className="px-4 py-3">
-                      {product.supplier}
-                    </td>
-
-                    <td className="px-4 py-3">
-                      {product.department}
-                    </td>
-
-                    <td className="px-4 py-3">
-
-                      <button className="text-blue-600 hover:underline mr-3" onClick={()=>navigate(`/edit-product/${product._id}`)}>
-                        Edit
-                      </button>
-
-                      <button className="text-red-600 hover:underline" onClick={()=>handleDelete(product._id)}>
-                        Delete
-                      </button>
-
-                    </td>
-
-                  </tr>
-
-                ))
-
-                )}
 
               </tbody>
 
