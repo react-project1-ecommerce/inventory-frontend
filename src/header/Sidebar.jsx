@@ -29,6 +29,10 @@ const Sidebar = () => {
   <Link to="/stock-history">Stock History</Link>
 </div>
 
+         <div className="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer">
+             <Link to="/ai-assistant">AI Inventory Assistant</Link>
+         </div>
+
         <div className="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer">
           Suppliers
         </div>

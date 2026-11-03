@@ -18,6 +18,7 @@ import EditCategory from "./pages/EditCategory";
 import StockManagement from "./pages/StockManagement";
 import StockHistory from "./pages/StockHistory";
 import ForgotPassword from "./pages/ForgotPassword";
+import AIAssistant from "./pages/AIAssistant";
 
 import { ToastContainer } from "react-toastify";
 
@@ -41,6 +42,7 @@ function App() {
         <Route path="/edit-category/:id"  element={<EditCategory/>}/>
         <Route path="/stock-management" element={<StockManagement/>}/>
         <Route path="/forgot-password" element={<ForgotPassword/>}/>
+        <Route path="/ai-assistant" element={<AIAssistant/>}/>
         <Route
   path="/stock-history"
   element={<StockHistory />}

@@ -7,6 +7,7 @@ import Header from "../header/Header";
 import Sidebar from "../header/Sidebar";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
+import Loader from "../components/Loader";
 
 const Categories = () => {
 
@@ -23,6 +24,8 @@ const Categories = () => {
   const [searchTerm, setSearchTerm] = useState("");  //search state for category search box
 
   const [currentUser, setCurrentUser] = useState(null);
+
+  const [loading, setLoading] = useState(true);
 
 
 const fetchCategories = async (user) => {
@@ -54,6 +57,11 @@ const fetchCategories = async (user) => {
     toast.error(
       err.response?.data?.message || "Failed to load categories"
     );
+  }
+  finally{
+
+    setLoading(false);
+
   }
 };
 
@@ -150,6 +158,10 @@ const handleSubmit = async (e) => {
     );
 
   }
+  finally{
+
+    setLoading(false);
+  }
   }; // closes handleSubmit
 
 const handleDelete = async (id) => {
@@ -184,7 +196,9 @@ if (!currentUser) {
 
     await fetchCategories(currentUser);
 
-    toast.success("Category deleted successfully!");
+    toast.success("Category deleted successfully!", {
+           autoClose: 1000,
+        });
 
   } catch (err) {
 
@@ -313,8 +327,14 @@ return (
             </thead>
 
             <tbody>
+            {loading ? (
+              <tr>
+    <td colSpan="8" className="py-6">
+      <Loader message="Loading categories..." />
+    </td>
+  </tr>
 
-                        {filteredCategories.length === 0 ? (
+            ) :  filteredCategories.length === 0 ? (
 
     <tr>
       <td
