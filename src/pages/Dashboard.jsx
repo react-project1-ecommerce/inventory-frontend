@@ -25,6 +25,16 @@ const [recentProducts, setRecentProducts] = useState([]);
 
 const [loading, setLoading] = useState(true); 
 
+//Will hold
+//AI inventory insights 
+//loading status
+//any error message
+
+const [insights, setInsights] = useState("");   
+const [insightsLoading, setInsightsLoading] = useState(false);
+const [insightsError, setInsightsError] = useState("");
+
+
 useEffect(() => {
 
   //The Dashboard waits for Firebase to confirm the login before requesting the user's inventory profile.
@@ -145,6 +155,50 @@ console.log("PRODUCT COUNT:", res.data.length);
 }, [navigate]);
 
 
+//AI inventory insights
+
+const handleGenerateInsights = async () => {
+  
+  setInsightsLoading(true);
+  setInsightsError("");
+  setInsights("");
+
+  try {
+    const user = auth.currentUser;
+
+    if (!user) {
+      throw new Error("Please log in to generate insights.");
+    }
+
+    const token = await user.getIdToken();
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/aiassistant/insights`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    setInsights(response.data.insights);
+
+  } catch (err) {
+    console.error("Inventory insights request failed:", err);
+
+    setInsightsError(
+      err.response?.data?.error ||
+      err.message ||
+      "Unable to generate inventory insights."
+    );
+
+  } finally {
+    setInsightsLoading(false);
+  }
+};
+
+
 
   return (
 
@@ -209,6 +263,54 @@ console.log("PRODUCT COUNT:", res.data.length);
     </div>
 
   </div>
+
+{/* AI Inventory Insights */}
+<div className="bg-white p-6 rounded-lg shadow mt-6">
+
+  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+
+    <div>
+      <h3 className="text-xl font-semibold text-slate-700">
+        AI Inventory Insights
+      </h3>
+
+      <p className="text-gray-500 mt-1">
+        Get AI-powered observations about your inventory.
+      </p>
+    </div>
+
+    <button
+      onClick={handleGenerateInsights}
+      disabled={insightsLoading}
+      className="rounded-lg bg-blue-600 px-5 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+    >
+      {insightsLoading ? "Analysing..." : "Generate Insights"}
+    </button>
+
+  </div>
+
+  {insightsLoading && (
+    <p className="mt-4 text-gray-500">
+      AI is analysing your inventory...
+    </p>
+  )}
+
+  {insightsError && (
+    <p className="mt-4 text-red-600">
+      {insightsError}
+    </p>
+  )}
+
+  {insights && (
+    <div className="mt-4 rounded-lg bg-blue-50 p-4 text-gray-700 whitespace-pre-wrap">
+      {insights}
+    </div>
+  )}
+
+</div>
+
+
+  
 
  {/* Recent Products */}
 <div className="bg-white p-6 rounded-lg shadow mt-6">
