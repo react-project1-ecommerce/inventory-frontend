@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { auth } from "../firebase";
 import Header from "../header/Header";
@@ -10,11 +10,38 @@ const AIAssistant = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const recognitionRef = useRef(null);
+  const stopRequestedRef = useRef(false);
+
   const [listening, setListening] = useState(false);  //voice dictation
+
+
+  useEffect(() => {
+  const handleEscape = (event) => {
+    if (event.key === "Escape" && recognitionRef.current) {
+      stopRequestedRef.current = true;
+      recognitionRef.current.stop();
+    }
+  };
+
+  window.addEventListener("keydown", handleEscape);
+
+  return () => {
+    window.removeEventListener("keydown", handleEscape);
+  };
+}, []);
 
   //dictation function
 
-  const handleDictate = () => {
+const handleDictate = () => {
+
+  // Stop dictation when the microphone is clicked again
+
+  if (listening && recognitionRef.current) {
+    stopRequestedRef.current = true; 
+    recognitionRef.current.stop();
+    return;
+  }
 
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -26,28 +53,51 @@ const AIAssistant = () => {
 
   const recognition = new SpeechRecognition();
 
+  recognitionRef.current = recognition;
+  stopRequestedRef.current = false;
+
   recognition.lang = "en-IN";
-  recognition.continuous = false;
+  recognition.continuous = true;
   recognition.interimResults = false;
 
   recognition.onstart = () => setListening(true);
 
   recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript.trim();
+    let transcript = "";
 
-    const formattedText = transcript.endsWith("?")
-  ? transcript
-  : transcript + "?";
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      if (event.results[i].isFinal) {
+        transcript += event.results[i][0].transcript;
+      }
+    }
 
-    //console.log("Dictated text:", transcript);
+    transcript = transcript.trim();
 
-    //setQuestion((prev) => (prev ? prev + " " : "") + transcript);
-
-     setQuestion((prev) => (prev ? prev + " " : "") + formattedText);
+    if (transcript) {
+      setQuestion((prev) => (prev ? prev + " " : "") + transcript);
+    }
   };
 
-  recognition.onerror = () => setListening(false);
-  recognition.onend = () => setListening(false);
+  recognition.onerror = () => {
+    stopRequestedRef.current = true;
+  };
+
+  recognition.onend = () => {
+    recognitionRef.current = null;
+    setListening(false);
+
+    if (stopRequestedRef.current) {
+      setQuestion((prev) => {
+        const trimmed = prev.trim();
+
+        return !trimmed || /[?!.]$/.test(trimmed)
+          ? trimmed
+          : trimmed + "?";
+      });
+
+      stopRequestedRef.current = false;
+    }
+  };
 
   recognition.start();
 };
@@ -182,7 +232,8 @@ const AIAssistant = () => {
   className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-white ${
     listening ? "bg-red-600" : "bg-gray-600 hover:bg-gray-700"
   } disabled:opacity-50`}
-  title={listening ? "Listening..." : "Dictate"}
+ // title={listening ? "Listening..." : "Dictate"}
+  title={listening ? "Stop Dictation" : "Dictate"}  //for Stop Dictation
 >
   <svg
     xmlns="http://www.w3.org/2000/svg"
