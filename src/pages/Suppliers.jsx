@@ -139,34 +139,34 @@ const Suppliers = () => {
 
     <div className="overflow-x-auto">
 
-      <table className="w-full border-collapse">
+      <table className="w-full border-collapse border border-gray-300">
 
- <thead>
-  <tr>
-    <th>Supplier Name</th>
-    <th>Contact Person</th>
-    <th>Email</th>
-    <th>Phone</th>
-    <th>City</th>
-    <th>State</th>
-    <th>PIN Code</th>
-    <th>Country</th>
-    <th>Actions</th>
+<thead>
+  <tr className="bg-gray-100">
+    <th className="border border-gray-300 px-4 py-3 text-left">Supplier Name</th>
+    <th className="border border-gray-300 px-4 py-3 text-left">Contact Person</th>
+    <th className="border border-gray-300 px-4 py-3 text-left">Email</th>
+    <th className="border border-gray-300 px-4 py-3 text-left">Phone</th>
+    <th className="border border-gray-300 px-4 py-3 text-left">City</th>
+    <th className="border border-gray-300 px-4 py-3 text-left">State</th>
+    <th className="border border-gray-300 px-4 py-3 text-left">PIN Code</th>
+    <th className="border border-gray-300 px-4 py-3 text-left">Country</th>
+    <th className="border border-gray-300 px-4 py-3 text-left">Actions</th>
   </tr>
 </thead>
 
 <tbody>
   {suppliers.map((supplier) => (
     <tr key={supplier._id}>
-      <td>{supplier.name}</td>
-      <td>{supplier.contactPerson || "-"}</td>
-      <td>{supplier.email}</td>
-      <td>{supplier.phone}</td>
-      <td>{supplier.city}</td>
-      <td>{supplier.state}</td>
-      <td>{supplier.pinCode}</td>
-      <td>{supplier.country}</td>
-      <td>
+      <td className="border border-gray-300 px-4 py-3">{supplier.name}</td>
+      <td className="border border-gray-300 px-4 py-3">{supplier.contactPerson || "-"}</td>
+      <td className="border border-gray-300 px-4 py-3">{supplier.email}</td>
+      <td className="border border-gray-300 px-4 py-3">{supplier.phone}</td>
+      <td className="border border-gray-300 px-4 py-3">{supplier.city}</td>
+      <td className="border border-gray-300 px-4 py-3">{supplier.state}</td>
+      <td className="border border-gray-300 px-4 py-3">{supplier.pinCode}</td>
+      <td className="border border-gray-300 px-4 py-3">{supplier.country}</td>
+      <td className="border border-gray-300 px-4 py-3">
         <div className="flex gap-2">
           <button
             onClick={() => navigate(`/edit-supplier/${supplier._id}`)}
