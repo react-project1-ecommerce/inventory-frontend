@@ -19,8 +19,12 @@ import StockManagement from "./pages/StockManagement";
 import StockHistory from "./pages/StockHistory";
 import ForgotPassword from "./pages/ForgotPassword";
 import AIAssistant from "./pages/AIAssistant";
+import Suppliers from "./pages/Suppliers";
+import AddSupplier from "./pages/AddSupplier";
+import EditSupplier from "./pages/EditSupplier";
 
 import { ToastContainer } from "react-toastify";
+
 
 function App() {
 
@@ -43,6 +47,9 @@ function App() {
         <Route path="/stock-management" element={<StockManagement/>}/>
         <Route path="/forgot-password" element={<ForgotPassword/>}/>
         <Route path="/ai-assistant" element={<AIAssistant/>}/>
+        <Route path="/suppliers" element={<Suppliers/>}/>
+        <Route path="/add-supplier" element={<AddSupplier />} />  
+        <Route path="/edit-supplier/:id" element={<EditSupplier/>} />
         <Route
   path="/stock-history"
   element={<StockHistory />}
