@@ -155,9 +155,6 @@ const Suppliers = () => {
   </tr>
 </thead>
 
-        <tbody>
-          {suppliers.map((supplier) => (
-
 <tbody>
   {suppliers.map((supplier) => (
     <tr key={supplier._id}>
@@ -189,9 +186,6 @@ const Suppliers = () => {
     </tr>
   ))}
 </tbody>
-
-          ))}
-        </tbody>
 
       </table>
 
