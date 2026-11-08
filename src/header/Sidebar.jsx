@@ -34,7 +34,7 @@ const Sidebar = () => {
          </div>
 
         <div className="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer">
-          Suppliers
+          <Link to="/suppliers">Suppliers</Link>
         </div>
 
         <div className="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer">
