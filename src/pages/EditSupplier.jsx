@@ -226,6 +226,67 @@ return (
   />
 </div>
 
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      City
+    </label>
+    <input
+      type="text"
+      name="city"
+      value={formData.city}
+      onChange={handleChange}
+      required
+      className="w-full border border-gray-300 rounded-md p-2"
+      placeholder="Enter city"
+    />
+  </div>
+
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      State
+    </label>
+    <input
+      type="text"
+      name="state"
+      value={formData.state}
+      onChange={handleChange}
+      required
+      className="w-full border border-gray-300 rounded-md p-2"
+      placeholder="Enter state"
+    />
+  </div>
+
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      PIN Code
+    </label>
+    <input
+      type="text"
+      name="pinCode"
+      value={formData.pinCode}
+      onChange={handleChange}
+      required
+      className="w-full border border-gray-300 rounded-md p-2"
+      placeholder="Enter PIN code"
+    />
+  </div>
+
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      Country
+    </label>
+    <input
+      type="text"
+      name="country"
+      value={formData.country}
+      onChange={handleChange}
+      required
+      className="w-full border border-gray-300 rounded-md p-2"
+    />
+  </div>
+</div>
+
 <div className="flex gap-3 pt-2">
   <button
     type="submit"
