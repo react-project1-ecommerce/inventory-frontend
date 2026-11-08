@@ -8,8 +8,11 @@ import { auth } from "../firebase";
 import Header from "../header/Header";
 import Sidebar from "../header/Sidebar";
 import Loader from "../components/Loader";
+import { getNames } from "country-list";
 
 const EditSupplier = () => {
+
+  const countries = getNames();
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -273,18 +276,26 @@ return (
   </div>
 
   <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">
-      Country
-    </label>
-    <input
-      type="text"
-      name="country"
-      value={formData.country}
-      onChange={handleChange}
-      required
-      className="w-full border border-gray-300 rounded-md p-2"
-    />
-  </div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Country
+  </label>
+
+  <select
+    name="country"
+    value={formData.country}
+    onChange={handleChange}
+    required
+    className="w-full border border-gray-300 rounded-md p-2"
+  >
+    <option value="">Select Country</option>
+
+    {countries.map((country) => (
+      <option key={country} value={country}>
+        {country}
+      </option>
+    ))}
+  </select>
+</div>
 </div>
 
 <div className="flex gap-3 pt-2">
