@@ -37,8 +37,12 @@ const Sidebar = () => {
           <Link to="/suppliers">Suppliers</Link>
         </div>
 
+          <div className="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer">
+          <Link to="/customers">Customers</Link>
+        </div>
+
         <div className="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer">
-          Purchases
+          <Link to="/purchase-management">Purchases</Link>
         </div>
 
         <div className="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer">

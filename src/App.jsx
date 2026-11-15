@@ -22,6 +22,9 @@ import AIAssistant from "./pages/AIAssistant";
 import Suppliers from "./pages/Suppliers";
 import AddSupplier from "./pages/AddSupplier";
 import EditSupplier from "./pages/EditSupplier";
+import PurchaseManagement from "./pages/PurchaseManagement";
+import CustomerManagement from "./pages/CustomerManagement";
+import AddCustomer from "./pages/AddCustomer.jsx";
 
 import { ToastContainer } from "react-toastify";
 
@@ -47,9 +50,13 @@ function App() {
         <Route path="/stock-management" element={<StockManagement/>}/>
         <Route path="/forgot-password" element={<ForgotPassword/>}/>
         <Route path="/ai-assistant" element={<AIAssistant/>}/>
-        <Route path="/suppliers" element={<Suppliers/>}/>
+        <Route path="/suppliers" element={<Suppliers/>}/>     
+        <Route path="/customers" element={<CustomerManagement/>}/>
+        
+        <Route path="/add-customer" element={<AddCustomer/>}/>
         <Route path="/add-supplier" element={<AddSupplier />} />  
         <Route path="/edit-supplier/:id" element={<EditSupplier/>} />
+        <Route path="/purchase-management" element={<PurchaseManagement/>}/>
         <Route
   path="/stock-history"
   element={<StockHistory />}

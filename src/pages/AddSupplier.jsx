@@ -6,12 +6,16 @@ import { toast } from "react-toastify";
 import { auth } from "../firebase";
 import Header from "../header/Header";
 import Sidebar from "../header/Sidebar";
-import { getNames } from "country-list";
+import { Country, State } from "country-state-city";
+
+
+const countries = Country.getAllCountries().sort((a, b) =>
+  a.name.localeCompare(b.name)
+);
 
 
 const AddSupplier = () => {
 
-  const countries = getNames();
 
   const navigate = useNavigate();
 
@@ -28,6 +32,17 @@ const [formData, setFormData] = useState({
   country: "India",  //def
 });
 
+
+const selectedCountry = countries.find(
+  (country) => country.name === formData.country
+);
+
+const states = selectedCountry
+  ? State.getStatesOfCountry(selectedCountry.isoCode)
+  : [];
+
+
+
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -37,6 +52,16 @@ const [formData, setFormData] = useState({
   	[name]: value,
   });
 
+};
+
+const handleCountryChange = (e) => {
+  setFormData((prev) => ({
+    ...prev,
+    country: e.target.value,
+    state: "",
+    city: "",
+    pinCode: "",
+  }));
 };
   
   const handleSubmit = async (e) => {
@@ -175,8 +200,65 @@ return (
   />
 </div>
 
+
 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-  <div>
+  
+
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Country
+  </label>
+
+  <select
+    name="country"
+    value={formData.country}
+    onChange={handleCountryChange}
+    required
+    className="w-full border border-gray-300 rounded-md p-2"
+  >
+    <option value="">Select Country</option>
+
+    {countries.map((country) => (
+      <option key={country.isoCode} value={country.name}>
+        {country.name}
+      </option>
+    ))}
+  </select>
+</div>
+
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    State / Region
+  </label>
+
+  {states.length > 0 ? (
+    <select
+      name="state"
+      value={formData.state}
+      onChange={handleChange}
+      required
+      className="w-full border border-gray-300 rounded-md p-2"
+    >
+      <option value="">Select State / Region</option>
+
+      {states.map((state) => (
+        <option key={state.isoCode} value={state.name}>
+          {state.name}
+        </option>
+      ))}
+    </select>
+  ) : (
+    <input
+      type="text"
+      value=""
+      disabled
+      placeholder="No regions available for this country"
+      className="w-full border border-gray-300 rounded-md p-2 bg-gray-100"
+    />
+  )}
+</div>
+
+    <div>
     <label className="block text-sm font-medium text-gray-700 mb-1">
       City
     </label>
@@ -188,21 +270,6 @@ return (
       required
       className="w-full border border-gray-300 rounded-md p-2"
       placeholder="Enter city"
-    />
-  </div>
-
-  <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">
-      State
-    </label>
-    <input
-      type="text"
-      name="state"
-      value={formData.state}
-      onChange={handleChange}
-      required
-      className="w-full border border-gray-300 rounded-md p-2"
-      placeholder="Enter state"
     />
   </div>
 
@@ -221,27 +288,7 @@ return (
     />
   </div>
 
-<div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">
-    Country
-  </label>
 
-  <select
-    name="country"
-    value={formData.country}
-    onChange={handleChange}
-    required
-    className="w-full border border-gray-300 rounded-md p-2"
-  >
-    <option value="">Select Country</option>
-
-    {countries.map((country) => (
-      <option key={country} value={country}>
-        {country}
-      </option>
-    ))}
-  </select>
-</div>
 </div>
 <div className="flex gap-3 pt-2">
 
