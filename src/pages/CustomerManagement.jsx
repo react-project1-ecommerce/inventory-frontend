@@ -54,7 +54,7 @@ useEffect(() => {
 
 
   if (loading) {
-    return <Loader />;
+    return <Loader message="Loading Customers..."/>;
   }
 
 

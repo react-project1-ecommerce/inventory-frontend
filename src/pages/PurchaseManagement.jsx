@@ -233,7 +233,7 @@ setProducts(productResponse.data);
   }, [navigate]);
 
   if (loading) {
-    return <Loader />;
+    return <Loader message="Loading Purchases..."/>;
   }
 
   return (
